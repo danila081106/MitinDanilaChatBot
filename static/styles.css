@@ -1,0 +1,224 @@
+/* Общие настройки */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #ffcc80; /* Оранжевый фон */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#chatHeader {
+    display: flex;
+    align-items: center; /* Вертикальное выравнивание */
+    padding: 10px;
+    background-color: #ff9800;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+    #chatHeader img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px; /* Отступ между изображением и текстом */
+    }
+
+    #chatHeader span {
+        flex-grow: 1; /* Занимает все доступное пространство после изображения */
+        text-align: center; /* Выравнивание текста по центру */
+    }
+
+/* Контейнер чата */
+#chatContainer {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 90%;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+/* Окно чата */
+#chat {
+    height: 450px; /* Уменьшаем высоту для учета заголовка */
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+/* Сообщения */
+.message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 12px;
+    position: relative;
+    max-width: 70%;
+    word-wrap: break-word;
+    font-size: 1em;
+}
+
+    .message.user {
+        background-color: #d1e7dd;
+        align-self: flex-end;
+        color: #0b5345;
+    }
+
+    .message.system {
+        background-color: #cce7f3; /* Светло-синий цвет фона */
+        align-self: flex-start;
+        color: #0d47a1; /* Темно-синий текст для контраста */
+        border-radius: 10px; /* Добавляем скругление углов */
+        padding: 8px 12px; /* Отступы внутри блока сообщения */
+        margin: 4px 0; /* Отступы между сообщениями */
+        max-width: 75%; /* Ограничение ширины сообщения */
+    }
+
+/* Время сообщения */
+.timestamp {
+    font-size: 0.8em;
+    color: grey;
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
+/* Панель ввода */
+#inputContainer {
+    display: flex;
+    padding: 10px;
+    background-color: #ffffff;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Поле ввода */
+#messageInput {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: #f0f2f5;
+    font-size: 1em;
+    margin-right: 10px;
+    transition: box-shadow 0.3s;
+}
+
+    #messageInput:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+/* Кнопка отправки */
+#sendButton {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 20px;
+    background-color: #0d6efd;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    font-size: 1em;
+}
+
+    #sendButton:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+/* Кнопка эмодзи */
+#emojiToggle {
+    margin-left: 10px;
+    font-size: 1.2em;
+    position: relative;
+    cursor: pointer;
+    color: #0d6efd;
+    transition: transform 0.2s;
+}
+
+    #emojiToggle:hover {
+        transform: scale(1.2);
+    }
+
+
+input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.emoji-button {
+    display: inline-block;
+    font-size: 24px;
+    margin: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease; /* Плавный переход */
+}
+    /* Эффект при нажатии (моментальный) */
+    .emoji-button:active {
+        transform: scale(1.5); /* Увеличение размера при нажатии */
+        color: #4caf50; /* Изменение цвета (зеленый для подтверждения) */
+    }
+    /* Анимация подтверждения после клика */
+    .emoji-button.confirmed {
+        animation: confirm 0.5s ease-out; /* Запускаем анимацию подтверждения */
+    }
+    
+/* Определение анимации "confirm" */
+@keyframes confirm {
+    0% {
+        transform: scale(1.2); /* Начальное увеличение */
+        color: #4caf50; /* Зеленый цвет */
+    }
+    100% {
+        transform: scale(1); /* Возвращение к нормальному размеру */
+        color: initial; /* Возвращение к исходному цвету */
+    }
+}
+#emojiToggle.active {
+    transform: rotate(180deg); /* Индикация активного состояния */
+}
+
+#emojiButton {
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#emojiPanel {
+    display: none; /* По умолчанию панель скрыта */
+    position: absolute;
+    bottom: 50px; /* Отступ от нижней части чата */
+    left: 0;
+    width: 100%;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+    #emojiPanel.active {
+        display: block;
+    }
+
+
+.emoji {
+    cursor: pointer;
+    font-size: 20px;
+    margin: 5px;
+}
+.file-upload-button {
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 5px;
+    color: #4CAF50; /* Цвет иконки */
+}
+
+    .file-upload-button:hover {
+        color: #388e3c; /* Цвет при наведении */
+    }

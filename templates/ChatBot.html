@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат-бот для изучения диких животных и их среды обитания</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="C:\Users\danil\Downloads\icon.png" type="image/x-icon">
+</head>
+<body>
+    <div id="chatContainer">
+        <!-- Заголовок чата -->
+        <div id="chatHeader">
+            <img src="{{ url_for('static', filename='icon.png') }}" alt="Логотип чат-бота">
+            <span>Чат-бот для изучения диких животных и их среды обитания</span>
+        </div>
+        <!-- Окно чата -->
+        <div id="chat"></div>
+        <!-- Панель ввода -->
+        <div id="inputContainer">
+            <input type="text" id="messageInput" placeholder="Введите сообщение...">
+            <button id="sendButton">Отправить</button>
+            <button id="emojiToggle">😃</button>
+            <!-- Кнопка выбора файла -->
+            <label for="fileInput" class="file-upload-button">📎</label>
+            <input type="file" id="fileInput" accept=".txt" style="display: none;">
+        </div>
+        <!-- Панель эмодзи -->
+        <div id="emojiPanel">
+            <div class="emoji-button" onclick="addEmoji('😂')">😂</div>
+            <div class="emoji-button" onclick="addEmoji('🤣')">🤣</div>
+            <div class="emoji-button" onclick="addEmoji('😊')">😊</div>
+            <div class="emoji-button" onclick="addEmoji('😍')">😍</div>
+            <div class="emoji-button" onclick="addEmoji('👍')">👍</div>
+            <div class="emoji-button" onclick="addEmoji('🐻')">🐻</div>
+            <div class="emoji-button" onclick="addEmoji('🦁')">🦁</div>
+            <div class="emoji-button" onclick="addEmoji('🦓')">🦓</div>
+            <div class="emoji-button" onclick="addEmoji('🐘')">🐘</div>
+            <div class="emoji-button" onclick="addEmoji('🐸')">🐸</div>
+            <div class="emoji-button" onclick="addEmoji('🌳')">🌳</div>
+            <div class="emoji-button" onclick="addEmoji('🌊')">🌊</div>
+            <div class="emoji-button" onclick="addEmoji('🌞')">🌞</div>
+            <div class="emoji-button" onclick="addEmoji('🌈')">🌈</div>
+            <div class="emoji-button" onclick="addEmoji('📚')">📚</div>
+            <div class="emoji-button" onclick="addEmoji('🌍')">🌍</div>
+            <div class="emoji-button" onclick="addEmoji('💡')">💡</div>
+        </div>
+    </div>
+    <script>
+        const chat = document.getElementById("chat");
+        const messageInput = document.getElementById("messageInput");
+        const sendButton = document.getElementById("sendButton");
+        const emojiToggle = document.getElementById("emojiToggle");
+        const emojiPanel = document.getElementById("emojiPanel");
+
+        // Элементы
+        const fileInput = document.getElementById("fileInput");
+
+        // Обработка выбора файла
+        fileInput.addEventListener("change", function (event) {
+            const file = event.target.files[0]; // Получаем выбранный файл
+
+            if (file) {
+                // Проверяем, является ли файл текстовым
+                if (file.type === "text/plain" || file.name.endsWith(".txt")) {
+                    // Создаем объект FileReader для чтения файла
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        const fileContent = e.target.result; // Содержимое файла
+                        appendMessage("You", `Вы загрузили файл:\n${file.name}\n\nСодержимое:\n${fileContent}`, "user");
+
+                        // Отправляем содержимое файла на сервер (если нужно)
+                        sendMessageWithFile(fileContent);
+                    };
+
+                    reader.readAsText(file); // Читаем файл как текст
+                } else {
+                    alert("Пожалуйста, выберите текстовый файл (.txt).");
+                }
+            }
+        });
+
+        // Функция для отправки сообщения с содержимым файла
+        function sendMessageWithFile(fileContent) {
+            fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message: fileContent })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    appendMessage("Ollama", data.response, "system");
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    appendMessage("Error", "Could not get response.", "system");
+                });
+        }
+
+
+
+        // Переключение панели эмодзи
+        emojiToggle.addEventListener("click", function () {
+            emojiPanel.classList.toggle("active");
+            emojiToggle.classList.toggle("active");
+        });
+
+        // Добавление эмодзи в поле ввода
+        function addEmoji(emoji) {
+            const userInput = document.getElementById("messageInput");
+            userInput.value += emoji; // Добавляем выбранный эмодзи в поле ввода
+            userInput.focus();
+        }
+
+        // Закрытие панели эмодзи при клике вне панели
+        document.addEventListener('click', function (event) {
+            if (!emojiPanel.contains(event.target) && event.target.id !== "emojiToggle") {
+                emojiPanel.classList.remove("active");
+                emojiToggle.classList.remove("active");
+            }
+        });
+
+        // Отправка сообщения
+        messageInput.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        function addEmoji(emoji) {
+            const userInput = document.getElementById("messageInput");
+            userInput.value += emoji; // Добавляем выбранный эмодзи в поле ввода
+            userInput.focus(); // Переводим фокус обратно на поле ввода
+
+            // Получаем кнопку, которая была нажата
+            const button = event.target;
+
+            // Добавляем класс "confirmed" для запуска анимации
+            button.classList.add("confirmed");
+
+            // Удаляем класс через 0.5 секунды (время анимации)
+            setTimeout(() => {
+                button.classList.remove("confirmed");
+            }, 500);
+
+            // Скрываем панель эмодзи
+            const emojiPanel = document.getElementById("emojiPanel");
+            const emojiToggle = document.getElementById("emojiToggle");
+
+            // Убираем класс "active" у панели и кнопки
+            emojiPanel.classList.remove("active");
+            emojiToggle.classList.remove("active");
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                appendMessage("You", message, "user");
+                messageInput.value = "";
+                fetch("/api/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: message })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        appendMessage("Ollama", data.response, "system");
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        appendMessage("Error", "Could not get response.", "system");
+                    });
+            }
+        }
+
+        // Добавление сообщения в чат
+        function appendMessage(sender, text, type) {
+            const messageElement = document.createElement("div");
+            messageElement.className = `message ${type}`;
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${text}<span class="timestamp">${new Date().toLocaleTimeString()}</span>`;
+            chat.appendChild(messageElement);
+            chat.scrollTop = chat.scrollHeight;
+        }
+    </script>
+</body>
+</html>
